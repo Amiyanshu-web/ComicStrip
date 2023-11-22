@@ -6,6 +6,6 @@ body {
   background: linear-gradient(45deg,
       rgba(0, 110, 193, 0.3),
       rgba(0, 0, 0, 0.1)) no-repeat fixed center,
-    url("./images/bg.png") no-repeat fixed center;
+    url("./images/bg3.jpg") no-repeat fixed center;
   background-size: cover;
-} 
+}

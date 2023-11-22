@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Modal, TextField, Box } from '@mui/material';
-import {Bars} from 'react-loader-spinner'
+import { Bars } from 'react-loader-spinner'
 import html2canvas from 'html2canvas';
 import './Characters.scss';
 import CharacterCard from './CharacterCard';
+// import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+// import cloudinary from 'cloudinary';
+const CLOUDINARY_FOLDER_NAME = 'Dashtoon'
+const CLOUDINARY_CLOUD_NAME = 'dbvg8hyac'
 
 export default function Characters() {
   const printRef = React.useRef();
+  const inputRef = React.useRef(null);
+  const [selectImage, setSelectImage] = React.useState("");
+
   // Frame state declaration
   const [frameOne, setFrameOne] = useState('');
   const [frameTwo, setFrameTwo] = useState('');
@@ -22,8 +29,8 @@ export default function Characters() {
 
   const [showModal, setShowModal] = useState(false);
   const [currentFrame, setCurrentFrame] = useState('');
-  const [textInput, setTextInput] = useState(''); 
-  const [loading,setLoading]  = useState(false);
+  const [textInput, setTextInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleModalShow = (frame) => {
     setShowModal(true);
@@ -115,7 +122,7 @@ export default function Characters() {
     handleModalClose();
   };
 
-  const handleReset = ()=>{
+  const handleReset = () => {
     setFrameOne("");
     setFrameTwo("");
     setFrameThree("");
@@ -126,9 +133,10 @@ export default function Characters() {
     setFrameEight("");
     setFrameNine("");
     setFrameTen("");
+    setSelectImage("");
   }
 
-  const handleDownloadImage = async(e) => {
+  const handleDownloadImage = async (e) => {
     e.preventDefault();
     // TODO: logic
     const element = printRef.current;
@@ -147,6 +155,52 @@ export default function Characters() {
     } else {
       window.open(data);
     }
+    // handleImage(data);
+  };
+
+  const handleImage = async (e) => {
+    e.preventDefault();
+    const element = printRef.current;
+    const canvas = await html2canvas(element);
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, 'image/jpeg');
+    }).then((imageBlob) => {
+      const formData = new FormData();
+      formData.append('file', imageBlob);
+      formData.append('upload_preset', 'Missing');
+      formData.append('folder', CLOUDINARY_FOLDER_NAME);
+
+      fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data.secure_url);
+          setSelectImage(data.secure_url);
+        })
+        .catch((error) => {
+          console.error('Error uploading image to Cloudinary:', error);
+        });
+    });
+  };
+
+  const handleCopyClick = (e) => {
+    e.preventDefault();
+    if (inputRef.current) {
+      inputRef.current.select();
+      document.execCommand('copy');
+      // Optionally, you can provide feedback to the user
+      alert('Copied to clipboard!');
+    }
   };
 
   const characterFrames = [
@@ -164,31 +218,39 @@ export default function Characters() {
 
   return (
     <>
-    {
-      loading &&
-      <Bars
-        height="80"
-        width="80"
-        color="rgb(82, 205, 240)"
-        ariaLabel="bars-loading"
-        wrapperStyle={{marginLeft:"45%",marginTop:"30%", position:"absolute",zIndex:"10000"}}
-        wrapperClass=""
-        visible={true}
-      />
-    }
+      {
+        loading &&
+        <Bars
+          height="80"
+          width="80"
+          color="rgb(82, 205, 240)"
+          ariaLabel="bars-loading"
+          wrapperStyle={{ marginLeft: "45%", marginTop: "30%", position: "absolute", zIndex: "10000" }}
+          wrapperClass=""
+          visible={true}
+        />
+      }
       <form className="search"
-        onSubmit={handleDownloadImage}
+      // onSubmit={handleDownloadImage}
       >
-        {/* <input
-          type="text"
-          placeholder="Download Image"
-          // disabled
-          readOnly
-        /> */}
+        <div style={{ display: "flex" }}>
+
+          <input
+            type="text"
+            placeholder="Download Image"
+            value={selectImage}
+            readOnly
+            ref={inputRef}
+            onClick={handleCopyClick}
+          />
+          {/* <ContentCopyIcon/> */}
+          {/* <button onClick={handleCopyClick} style={{height:"10px"}}>📋</button> */}
+        </div>
         <div className="buttons">
-          <button type="submit">Download</button>
+          <button onClick={handleDownloadImage}>Download </button>
+          <button onClick={handleImage}>Generate Link</button>
           <button type="reset" className="reset"
-           onClick={handleReset}>
+            onClick={handleReset}>
             Reset
           </button>
         </div>
@@ -227,7 +289,7 @@ export default function Characters() {
             autoFocus
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <button variant="contained" className= "reset" onClick={handleModalClose} sx={{ mr: 1 }}>
+            <button variant="contained" className="reset" onClick={handleModalClose} sx={{ mr: 1 }}>
               Close
             </button>
             &nbsp;
