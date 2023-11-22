@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Modal, Button, TextField, Box } from '@mui/material';
+import { Modal, TextField, Box } from '@mui/material';
+import {Bars} from 'react-loader-spinner'
+import html2canvas from 'html2canvas';
 import './Characters.scss';
 import CharacterCard from './CharacterCard';
 
 export default function Characters() {
+  const printRef = React.useRef();
   // Frame state declaration
   const [frameOne, setFrameOne] = useState('');
   const [frameTwo, setFrameTwo] = useState('');
@@ -20,6 +23,7 @@ export default function Characters() {
   const [showModal, setShowModal] = useState(false);
   const [currentFrame, setCurrentFrame] = useState('');
   const [textInput, setTextInput] = useState(''); 
+  const [loading,setLoading]  = useState(false);
 
   const handleModalShow = (frame) => {
     setShowModal(true);
@@ -35,6 +39,7 @@ export default function Characters() {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       // Make an API call to the Image Generation API
       const apiUrl = "https://xdwvg9no7pefghrn.us-east-1.aws.endpoints.huggingface.cloud";
@@ -106,8 +111,42 @@ export default function Characters() {
     }
     // 
 
-
+    setLoading(false);
     handleModalClose();
+  };
+
+  const handleReset = ()=>{
+    setFrameOne("");
+    setFrameTwo("");
+    setFrameThree("");
+    setFrameFour("");
+    setFrameFive("");
+    setFrameSix("");
+    setFrameSeven("");
+    setFrameEight("");
+    setFrameNine("");
+    setFrameTen("");
+  }
+
+  const handleDownloadImage = async(e) => {
+    e.preventDefault();
+    // TODO: logic
+    const element = printRef.current;
+    const canvas = await html2canvas(element);
+
+    const data = canvas.toDataURL('image/jpg');
+    const link = document.createElement('a');
+
+    if (typeof link.download === 'string') {
+      link.href = data;
+      link.download = 'image.jpg';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
   };
 
   const characterFrames = [
@@ -125,7 +164,38 @@ export default function Characters() {
 
   return (
     <>
-      <div className="characters">
+    {
+      loading &&
+      <Bars
+        height="80"
+        width="80"
+        color="rgb(82, 205, 240)"
+        ariaLabel="bars-loading"
+        wrapperStyle={{marginLeft:"45%",marginTop:"30%", position:"absolute",zIndex:"10000"}}
+        wrapperClass=""
+        visible={true}
+      />
+    }
+      <form className="search"
+        onSubmit={handleDownloadImage}
+      >
+        {/* <input
+          type="text"
+          placeholder="Download Image"
+          // disabled
+          readOnly
+        /> */}
+        <div className="buttons">
+          <button type="submit">Download</button>
+          <button type="reset" className="reset"
+           onClick={handleReset}>
+            Reset
+          </button>
+        </div>
+      </form>
+
+
+      <div className="characters" ref={printRef}>
         {characterFrames.map(({ frame, imageUrl }) => (
           <CharacterCard
             key={frame}
