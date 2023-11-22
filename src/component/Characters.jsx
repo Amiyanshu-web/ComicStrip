@@ -160,6 +160,7 @@ export default function Characters() {
 
   const handleImage = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const element = printRef.current;
     const canvas = await html2canvas(element);
 
@@ -186,11 +187,13 @@ export default function Characters() {
         .then((data) => {
           console.log(data.secure_url);
           setSelectImage(data.secure_url);
+          setLoading(false);
         })
         .catch((error) => {
           console.error('Error uploading image to Cloudinary:', error);
         });
     });
+
   };
 
   const handleCopyClick = (e) => {
@@ -237,7 +240,7 @@ export default function Characters() {
 
           <input
             type="text"
-            placeholder="Download Image"
+            placeholder="Click to copy link"
             value={selectImage}
             readOnly
             ref={inputRef}
@@ -278,7 +281,6 @@ export default function Characters() {
         centered
       >
         <Box sx={{ width: 400, bgcolor: 'background.paper', p: 3 }}>
-          {/* <h2 id="modal-title">Enter Image URL for {currentFrame}</h2> */}
           <TextField
             id="outlined-basic"
             label="Describe what you want to see"
