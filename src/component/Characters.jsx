@@ -226,9 +226,15 @@ export default function Characters() {
         <Bars
           height="80"
           width="80"
-          color="rgb(82, 205, 240)"
+          // color="rgb(82, 205, 240)"
+          color= "red"
           ariaLabel="bars-loading"
-          wrapperStyle={{ marginLeft: "45%", marginTop: "30%", position: "absolute", zIndex: "10000" }}
+          wrapperStyle={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: "10000" }}
           wrapperClass=""
           visible={true}
         />
