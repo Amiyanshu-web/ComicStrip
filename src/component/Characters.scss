@@ -39,8 +39,8 @@ button {
 }
 
 .characters {
-    max-width: 80vw;
-    margin: 0 auto;
+    max-width: 82vw;
+    margin: 10px auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 5px;
@@ -57,7 +57,8 @@ button {
     padding: 1em;
     display: flex;
     flex-direction: column;
-    height: 300px;
+    height: 35vh;
+    width: 24vw;
     border: 2px solid black;
     box-shadow: 4px 4px black;
     filter: grayscale(100);
@@ -108,9 +109,22 @@ button {
     margin: auto;
     font-family: "Bangers", cursive;
 }
+.imageclass{
+    height: 35vh;
+}
 
 @media only screen and (max-width: 800px) {
     .characters {
         grid-template-columns: repeat(1, 1fr);
+    }
+
+    .characterCard {
+        width: 75vw;
+        height: 40vh;
+    }
+
+    .imageclass {
+        width: 75vw;
+        height: 40vh;
     }
 }

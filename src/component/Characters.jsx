@@ -24,7 +24,6 @@ export default function Characters() {
   const [frameSeven, setFrameSeven] = useState('');
   const [frameEight, setFrameEight] = useState('');
   const [frameNine, setFrameNine] = useState('');
-  const [frameTen, setFrameTen] = useState('');
 
 
   const [showModal, setShowModal] = useState(false);
@@ -49,8 +48,10 @@ export default function Characters() {
     setLoading(true);
     try {
       // Make an API call to the Image Generation API
-      const apiUrl = "https://xdwvg9no7pefghrn.us-east-1.aws.endpoints.huggingface.cloud";
-      const apiKey = "VknySbLLTUjbxXAXCjyfaFIPwUTCeRXbFSOjwRiCxsxFyhbnGjSFalPKrpvvDAaPVzWEevPljilLVDBiTzfIbWFdxOkYJxnOPoHhkkVGzAknaOulWggusSFewzpqsNWM";
+      const apiUrl = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
+      // const apiUrl = "https://api-inference.huggingface.co/models/dataautogpt3/OpenDalleV1.1";
+      const apiKey = "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";
+
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -59,17 +60,18 @@ export default function Characters() {
           "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ inputs: textInput }),
+        body: JSON.stringify({ inputs: textInput })
       });
 
       if (response.ok) {
         const blob = await response.blob();
+        // console.log(blob);
         const imageUrl = URL.createObjectURL(blob);
 
         // // Update the state with the generated image URL
         // setGeneratedImageUrl(imageUrl);
         // console.log(response.url);
-        console.log(imageUrl);
+        // console.log(imageUrl);
 
         switch (currentFrame) {
           case 'frameOne':
@@ -98,9 +100,6 @@ export default function Characters() {
             break;
           case 'frameNine':
             setFrameNine(imageUrl);
-            break;
-          case 'frameTen':
-            setFrameTen(imageUrl);
             break;
           default:
             break;
@@ -132,7 +131,6 @@ export default function Characters() {
     setFrameSeven("");
     setFrameEight("");
     setFrameNine("");
-    setFrameTen("");
     setSelectImage("");
   }
 
@@ -216,7 +214,6 @@ export default function Characters() {
     { frame: 'frameSeven', imageUrl: frameSeven },
     { frame: 'frameEight', imageUrl: frameEight },
     { frame: 'frameNine', imageUrl: frameNine },
-    { frame: 'frameTen', imageUrl: frameTen },
   ];
 
   return (
@@ -227,14 +224,15 @@ export default function Characters() {
           height="80"
           width="80"
           // color="rgb(82, 205, 240)"
-          color= "red"
+          color="red"
           ariaLabel="bars-loading"
           wrapperStyle={{
             position: "fixed",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            zIndex: "10000" }}
+            zIndex: "10000"
+          }}
           wrapperClass=""
           visible={true}
         />
